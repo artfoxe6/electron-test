@@ -15,6 +15,10 @@ build --win --config=build.json
 
 没有做任何优化的情况下 打包window exe  70M左右
 
+# 截图
+<a href="https://github.com/codeAB/electron-test/blob/master/Screenshot0.jpg" target="_blank"><img src="https://raw.githubusercontent.com/codeAB/electron-test/master/Screenshot0.jpg" style="max-width:100%;"></a>
+<a href="https://github.com/codeAB/electron-test/blob/master/Screenshot1.jpg" target="_blank"><img src="https://raw.githubusercontent.com/codeAB/electron-test/master/Screenshot1.jpg" style="max-width:100%;"></a>
+
 # 总结
 
 运行速度还行，性能上可以接受，比起Qt来说API少的可怜，功能有限，交互界面 “炫” 不起来.
