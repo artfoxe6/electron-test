@@ -1,0 +1,501 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>title</title>
+</head>
+<style>
+    body,
+    h2,
+    div,
+    header {
+        margin: 0;
+        padding: 0;
+    }
+    
+     ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    
+     ::-webkit-scrollbar-track-piece {
+        background-color: #ddd;
+        /*-webkit-border-radius: 6px;*/
+    }
+    
+     ::-webkit-scrollbar-thumb:vertical {
+        height: 2px;
+        background-color: #ADC7E1;
+        -webkit-border-radius: 6px;
+    }
+    /*::-webkit-scrollbar-thumb:horizontal {
+        width: 5px;
+        background-color: #CCCCCC;
+        -webkit-border-radius: 6px;
+    }*/
+    
+    .handlebtn button {
+        border: none;
+        background: none;
+        color: white;
+        outline: none;
+    }
+    
+    .handlebtn button:hover {
+        opacity: 0.5;
+    }
+    
+    .table tr {
+        height: 40px;
+    }
+    
+    .table tr td {
+        padding: 5px;
+        border: 1px solid rgba(46, 177, 226, 0.5);
+        border-width: 0px 1px 1px 0px;
+    }
+    
+    .table tr th {
+        padding: 5px;
+        font-weight: 200;
+        /*border: 1px solid #add9c0;*/
+        /*border-width: 1px 1px 1px 0px;*/
+        background: #EF3A5B;
+        color: #fff;
+        overflow-y: auto;
+    }
+    
+    .table {
+        font-weight: 200;
+        /*border: 1px solid #add9c0;*/
+        /*border-width: 1px 0px 0px 1px;*/
+        width: 100%;
+        text-align: left;
+        padding: 0px;
+        background: white;
+        color: #1D1D1D;
+        font-size: 0.9em;
+    }
+    
+    #myMenu {
+        width: 60px;
+        height: 90px;
+        background: #fff;
+        position: fixed;
+        padding: 5px 0px;
+        top: 0px;
+        left: 0px;
+        display: none;
+        z-index: 9;
+        border: 1px solid #ddd;
+    }
+    
+    #myMenu div:hover {
+        opacity: 0.8;
+        background: #aaa;
+    }
+</style>
+
+<body style="overflow:hidden;padding:0px;background-color:#1d1d1d;user-select: none;cursor:default;">
+    <div style="-webkit-app-region: drag;height:60px;width:100%;background-color:#180153;box-shadow: 0px 3px 16px rgba(0,0,0,0.2);z-index:999;position:absolute;top:0px;left:0px;">
+        <span style="color:white;font-weight:100;line-height:60px;margin-left:2%;font-size:1.5em;display:inline-block;float:left">销售系统</span>
+
+        <input onblur="this.value=''" onkeypress="gotosearch()" id="searchkey" style="box-shadow: 0px 1px 10px #000;-webkit-app-region:no-drag;height:30px;width:220px;border:none;border-radius:15px;padding:0;margin:0px;margin-top:15px;margin-left:30px;font-size:12px;padding-left:10px;float:left;outline:none;text-indent:10px;"
+            type="text" name="search" value="" placeholder="手机 , 标签 , 关键字">
+
+        <div class="handlebtn" style="height:35px;position:absolute;right:0px;top:1px;display:inline-block;-webkit-app-region:no-drag;cursor:pointer;">
+            <button type="button" style="cursor:pointer;-webkit-app-region:no-drag;font-size:16px;margin-left:-5px;margin-top:-5px;" onclick="shouqi()">❊</button>
+            <button type="button" style="cursor:pointer;-webkit-app-region:no-drag" onclick="handle('setmin')">一</button>
+            <button type="button" style="cursor:pointer;-webkit-app-region:no-drag" onclick="handle('setmax')">❒</button>
+            <button type="button" style="cursor:pointer;-webkit-app-region:no-drag;font-size:20px;" onclick="handle('close')">×</button>
+            <!--<button type="button" style="font-size:16px;">✕</button>-->
+            <!--<img src="../images/close.png" onclick="handle('close')" alt="">-->
+
+
+            <button type="button" style="cursor:pointer;-webkit-app-region:no-drag" onclick="refresh()">刷新</button>
+            <button type="button" style="cursor:pointer;-webkit-app-region:no-drag" onclick="handle('tool')">调试</button>
+
+        </div>
+    </div>
+    <div style="clear:both"> </div>
+
+    <div id="myMenu">
+        <div onclick="selectTag('有意向')" style="cursor:pointer;height:30px;width:100%;text-align:center;color:#1D1D1D;line-height:30px;border-bottom:1px solid #eee;font-size:0.8em"><span style="color:green">● </span>有意向</div>
+        <div onclick="selectTag('无意向')" style="cursor:pointer;height:30px;width:100%;text-align:center;color:#1D1D1D;line-height:30px;border-bottom:1px solid #eee;font-size:0.8em"><span style="color:grey">● </span>无意向</div>
+        <div onclick="selectTag('不确定')" style="cursor:pointer;height:30px;width:100%;text-align:center;color:#1D1D1D;line-height:30px;font-size:0.8em"><span style="color:#A316CF">● </span>不确定</div>
+
+    </div>
+    <div id="Box" style="width:100%;position:absolute;top:60px;left:0px;background:#3A5E7E">
+        <div id="leftBox" style="width:20%;height:100%;background-color:#3A5E7E;position:absolute;top:0px;left:0px;">
+            <div style="height:60px;width:90%;background:#A703B1;text-align:center;color:white;line-height:60px;margin:5px 0;margin-left:5%;">当前销售:<span id="admin" style="font-weight:bold"></span></div>
+            <div onclick="getMylist('my')" style="cursor:pointer;height:60px;width:90%;background:#0099E5;text-align:center;color:white;line-height:60px;margin:5px 0px;margin-left:5%;">接待中...</div>
+            <div onclick="getMylist('public')" style="cursor:pointer;height:60px;width:90%;background:#EF3A5B;text-align:center;color:white;line-height:60px;margin:5px 0px;margin-left:5%">共享资源</div>
+            <div onclick="openUrl('http://192.168.1.121')" style="cursor:pointer;height:60px;width:90%;background:#87B83A;text-align:center;color:white;line-height:60px;margin:5px 0px;margin-left:5%">官网</div>
+            <div onclick="openUrl('http://192.168.1.121/v6')" style="cursor:pointer;height:60px;width:90%;background:#EBB741;text-align:center;color:white;line-height:60px;margin:5px 0px;margin-left:5%">销售后台</div>
+            <div id="taobao" onclick="openTaobao()" style="cursor:pointer;height:60px;width:90%;background:#FC4102;text-align:center;color:white;line-height:60px;margin:5px 0px;margin-left:5%;display:none;opacity:0.7">我的淘宝店</div>
+            <div onclick="openMessage()" id="setting" style="cursor:pointer;height:40px;width:90%;background:#333;text-align:center;color:white;line-height:40px;margin:5px 0px;position:absolute;bottom:0px;margin-left:5%;display:none">软件设置</div>
+        </div>
+        <div id="rightBox" style="width:80%;height:100%;background:#ddd;font-size:0.9em;position:absolute;top:0px;left:20%;border-left:1px solid #3A5E7E;">
+            <div style="height:100%;width:99%;overflow:auto;border-top:5px solid #3A5E7E;margin-left:0.5%">
+                <div style="position:absolute;height:100%;width:0.5%;top:0px;right:0px;background:#3A5E7E"></div>
+                <div style="position:absolute;height:100%;width:0.5%;top:0px;left:0px;background:#3A5E7E"></div>
+                <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                    <tr>
+                        <th style="min-width:70px;">时间</th>
+                        <th style="min-width:120px;">操作</th>
+                        <th style="min-width:60px;">标签</th>
+                        <th style="min-width:40px;">过期</th>
+                        <th style="min-width:160px;">备注</th>
+                        <th style="">信息</th>
+                    </tr>
+                </table>
+
+                <div id="pagecontrol" style="margin:10px">
+                    <a href='javascript:;' onclick='gotopage(-1)' style='opacity: 1;background:#2975EF;color:white;padding:5px;font-size:0.8em;text-decoration:none'>上一页</a>
+                    <a href='javascript:;' onclick='gotopage(1)' style='opacity: 1;background:#2975EF;color:white;padding:5px;font-size:0.8em;text-decoration:none'>下一页</a>
+                    <input type="text" id="pagenumber" value="" style="width:50px;height:20px;border:none;outline:none;background:none;border-bottom:1px solid #2975EF">
+                    <a href='javascript:;' onclick='gotopage(3)' style='opacity: 1;background:#2975EF;color:white;padding:5px;font-size:0.8em;text-decoration:none'>跳 到</a>
+                    <span id="currentpageinfo" style="font-size:0.9em;margin-bottom:10px;color:#333"></span>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <img id="loading" style="position:fixed;height:100px;width:100px;top:50%;margin-top:-50px;left:50%;margin-left:-50px;z-index:99;display:none" src="../images/loading.gif" alt="">
+
+    <div id="remarkbox" style="width:300px;height:240px;background:#2EB1E2;position:fixed;top:0px;left:50%;margin-left:-150px;margin-top:160px;z-index:9999;overflow:hidden;display:none;box-shadow: 0 5px 16px rgba(0,0,0,0.8);border-width: 0 1px 1px;border: 1px solid #878787;">
+        <div style="color:#fff;background:#2EB1E2;height:10%;line-height:35px;width:100%;position:absolute;top:0px;left:0px;text-align:center">备注</div>
+        <textarea id="remarktext" style="height:170px;width:297px;border:none;outline:none;margin-top:10%;resize:none" placeholder="请输入内容..."></textarea>
+        <div style="text-align:right;margin-top:0px;padding-right:5px;">
+            <style>
+                .cancelremark {
+                    cursor: pointer;
+                    opacity: 1;
+                    color: white;
+                    padding: 5px;
+                    text-decoration: none
+                }
+                
+                .cancelremark:hover {
+                    color: #333
+                }
+            </style>
+            <span onclick="document.getElementById('remarkbox').style.display = 'none'" class='cancelremark'>取消</span>
+            <span onclick='gotobeizhu()' class='cancelremark'>提交</span>
+        </div>
+    </div>
+
+
+    <div id="chakanremark" style="box-shadow: 0 5px 16px rgba(0,0,0,0.8);width:30%;height:50%;background:#fff;position:fixed;top:0px;margin-top:160px;left:50%;margin-left:-15%;z-index:9999;overflow:hidden;display:none;padding:0 2%;border-width: 0 1px 1px;border: 1px solid #878787;">
+        <div style="color:#fff;background:#2EB1E2;height:10%;width:100%;position:absolute;top:0px;left:0px;text-align:center">备注列表</div>
+        <!--<span onclick="document.getElementById('chakanremark').style.display = 'none'" style='cursor:pointer;opacity: 1;color:#fff;padding:5px;text-decoration:none;position:absolute;top:0px;right:10px;'>关闭</span>-->
+        <img src="../images/close.png" style="cursor:pointer;opacity: 1;position:absolute;top:5px;right:10px;width:15px;height:15px;" onclick="document.getElementById('chakanremark').style.display = 'none'" alt="">
+        <div id="putmark" style="width:96%;height:90%;position:absolute;overflow-y:auto;color:#333;font-size:0.9em;top:10%;">
+
+
+        </div>
+    </div>
+</body>
+
+</html>
+
+
+<script>
+    const {
+        ipcRenderer,
+        shell
+    } = require('electron');
+
+    function openMessage() {
+        document.getElementById("setting").style.display = 'none';
+        window.localStorage.setItem("setting", "clicked");
+        setTimeout(function() {
+            alert("设置不见了");
+        }, 100)
+    }
+
+    function openTaobao() {
+        document.getElementById("taobao").style.display = 'none';
+        window.localStorage.setItem("taobao", "clicked");
+        openUrl('https://item.taobao.com/item.htm?spm=a217h.8239130.618661.14.r2mfc2&id=537539638545');
+    }
+
+    setTimeout(function() {
+        if (!window.localStorage.getItem("setting")) {
+            document.getElementById("setting").style.display = 'block';
+        }
+        if (!window.localStorage.getItem("taobao")) {
+            document.getElementById("taobao").style.display = 'block';
+        }
+    }, 100)
+
+    window.s_page = 1;
+    window.s_count = 0;
+    window.pagesize = 15;
+
+    function openUrl(url) {
+        shell.openExternal(url);
+    }
+
+    window.onload = function() {
+
+        initStyle();
+        document.getElementById("admin").innerText = window.localStorage.getItem("admin");
+        getMylist('my');
+    }
+
+    function gotobeizhu(t) {
+
+        if (window.uphone) {
+            var v = document.getElementById("remarktext").value;
+            if (!v) {
+                return false;
+            }
+            document.getElementById("remarktext").value = '';
+            // console.log(window.uphone);
+            // return;
+            caozuo(2, window.uphone, '&mark=' + v);
+            document.getElementById('remarkbox').style.display = 'none';
+        }
+
+    }
+
+    function openbeizhu(phone) {
+
+        window.uphone = phone;
+        document.getElementById('remarkbox').style.display = 'block'
+    }
+
+    function selectTag(v) {
+
+        caozuo(4, window.uphone, '&tag=' + v);
+    }
+
+    function caozuo(type, phone, other = '') {
+        var c = ['jieru', 'shifang', 'beizhu', 'chakan', 'tag'];
+
+        var xmlhttp = new XMLHttpRequest();
+        var url = "http://192.168.1.121/api/wap/saleit";
+        xmlhttp.open("POST", url, true);
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 1 || xmlhttp.readyState == 2 || xmlhttp.readyState == 3) {}
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                var d = xmlhttp.responseText; // 返回值 
+                if (other == 888) {
+                    getMylist('my', true);
+                } else {
+                    getMylist('my', false);
+                }
+
+            }
+        }
+        xmlhttp.send("a=" + window.localStorage.getItem('admin') + "&m=" + c[type] + "&u=" + phone + other);
+    }
+
+    function handle(s) {
+
+        ipcRenderer.send('handle', s);
+    }
+
+    function closeApp() {
+
+    }
+
+    function refresh() {
+        location.reload();
+    }
+    window.onresize = function() {
+
+        initStyle();
+    }
+
+    function gotosearch() {
+
+        if (event.keyCode == 13) {
+            getMylist('my');
+        }
+    }
+
+    function gotopage(t) {
+        var oldpage = window.s_page;
+        if (t == 3) {
+            var p = document.getElementById('pagenumber').value;
+            window.s_page = parseInt(p);
+        } else {
+            window.s_page = parseInt(window.s_page) + parseInt(t);
+            // console.log(window.s_page);
+        }
+        if (window.s_page > Math.ceil(window.s_count / window.pagesize)) {
+            window.s_page = oldpage;
+            return;
+        }
+        if (window.s_page <= 0) {
+            window.s_page = oldpage;
+            return;
+        }
+        getMylist('my');
+
+    }
+
+    function initStyle() {
+        var t = Math.ceil((window.innerHeight - 180) / 40);
+        t = t < 5 ? 5 : t;
+        window.pagesize = t;
+        document.getElementById('Box').style.height = (window.innerHeight - 58) + "px";
+    }
+
+    function chakan(t, phone) {
+        var v = t.getAttribute('m').split('::').join('<br>');
+        document.getElementById("putmark").innerHTML = v;
+        document.getElementById("chakanremark").style.display = 'block';
+    }
+
+    window.myMenu = document.getElementById("myMenu");
+    document.addEventListener("contextmenu", function(event) {
+        event.preventDefault();
+        if (event.target.getAttribute('class') == 'tag' && window.localStorage.getItem("s_type") == 'my') {
+            var p = event.target.getAttribute('phone');
+            window.uphone = p;
+            myMenu.style.top = (event.clientY + 5) + "px";
+            myMenu.style.left = (event.clientX + 5) + "px";
+            myMenu.style.display = "block";
+        }
+
+    });
+
+    document.addEventListener("click", function(event) {
+        setTimeout(function() {
+            myMenu.style.display = "none";
+        }, 10)
+    });
+
+    function shouqi() {
+        if (parseInt(document.getElementById("rightBox").style.left) == 0) {
+
+            document.getElementById("leftBox").style.width = '20%';
+            document.getElementById("rightBox").style.width = "80%";
+            document.getElementById("rightBox").style.left = "20%";
+        } else {
+            document.getElementById("leftBox").style.width = 0;
+            document.getElementById("rightBox").style.width = "100%";
+            document.getElementById("rightBox").style.left = 0;
+        }
+
+    }
+
+    function getMylist(type, loading = true) {
+        console.log(type);
+        if (loading) {
+            document.getElementById("loading").style.display = 'block';
+            document.getElementById("Box").style.opacity = 0.2;
+        }
+        var xmlhttp = new XMLHttpRequest();
+        var url = "http://192.168.1.121/api/wap/jiedaizhong";
+        xmlhttp.open("POST", url, true);
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        xmlhttp.onreadystatechange = function() {
+            if (loading) {
+                setTimeout(function() {
+                    document.getElementById("loading").style.display = 'none';
+                    document.getElementById("Box").style.opacity = 1;
+                }, 400);
+            }
+            if (xmlhttp.readyState == 1 || xmlhttp.readyState == 2 || xmlhttp.readyState == 3) {}
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                var d = xmlhttp.responseText; // 返回值 
+                window.s_count = d.split("#")[1];
+                // alert(window.s_count);
+                var alldata = document.querySelectorAll(".data");
+                for (var j = 0; j < alldata.length; j++) {
+                    alldata[j].remove();
+                }
+                var o = JSON.parse(d.split("#")[0]);
+                if (o.length == 0) {
+                    document.getElementById('pagecontrol').style.display = 'none';
+                    return;
+                }
+                // alert(o.length);
+                if (window.s_count < window.pagesize) {
+                    document.getElementById('pagecontrol').style.display = 'none';
+                } else {
+                    document.getElementById('pagecontrol').style.display = 'block';
+                }
+                // console.log(o);
+                for (var i = 0; i < o.length; i++) {
+                    if (!o[i].sex) o[i].sex = '';
+                    if (o[i].age == '0000-00-00') o[i].age = '';
+                    if (!o[i].age) o[i].age = '';
+                    if (!o[i].mryst) o[i].mryst = '';
+                    if (!o[i].addr) o[i].addr = '';
+                    if (o[i].age) {
+                        o[i].age = (new Date()).getFullYear() - o[i].age.split("-")[0];
+                    }
+
+                    exp = 15;
+                    var timestamp = (new Date()).getTime();
+                    var t = parseInt(timestamp.toString().substr(0, 10));
+
+                    // var end = parseInt(parseInt((new Date(o[i].expire)).getTime().toString().substr(0, 10)) + exp * 86400);
+                    var end = parseInt((new Date(o[i].expire)).getTime().toString().substr(0, 10)) + parseInt(exp * 86400);
+                    // console.log(end);
+
+                    if (end < t) {
+                        o[i].expire = "接待已经过期";
+                    } else {
+                        var pos = end - t;
+                        // console.log(end);
+                        o[i].expire = Math.floor(pos / 86400) + "天"
+                    }
+
+                    var varphone = o[i].phone;
+                    if (window.localStorage.getItem('s_type') == 'public') {
+
+                        o[i].phone = '';
+                        o[i].expire = '';
+
+                        // o[i].remark = '';
+                    }
+
+                    var tr = document.createElement("tr");
+                    tr.setAttribute('class', 'data');
+                    var caozuo = "<span  onclick='caozuo(0," + varphone + ")'  style='background:#3FC42B;color:white;padding:5px;font-size:0.9em;'>接入<span>";
+
+                    if (window.localStorage.getItem('s_type') == 'my') {
+                        caozuo = "<span  onclick='caozuo(0," + o[i].phone + ")'  style='background:#3FC42B;color:white;padding:5px;font-size:0.9em;'>续接</span> <span onclick='caozuo(1," + o[i].phone + ")' style='background:#F15A2B;color:white;padding:5px;font-size:0.9em;'>丢弃</span> <span onclick='openbeizhu(" + o[i].phone + ")' style='background:#2975EF;color:white;padding:5px;font-size:0.9em;'>备注</span>";
+
+                    }
+                    tr.innerHTML = " <td style=''>2017-04-18</td> <td style=''> " + caozuo + " </td> <td class='tag' phone=" + o[i].phone + " style='cursor:pointer'>" + o[i].tag + "</td> <td style=''>" + o[i].expire + "</td> <td m='" + o[i].remark + "' onclick=chakan(this," + varphone + ")><span style='color:red;margin-right:10px' >●</span>" + o[i].remark.split("::").pop().substr(0, 10) + "</td> <td style=''> " + o[i].sex + " " + o[i].age + " " + o[i].mryst + " " + o[i].addr + "</td> ";
+                    document.querySelector("table").appendChild(tr);
+                }
+
+                document.getElementById('currentpageinfo').innerText = window.s_count + " 条记录 " + window.s_page + "/" + Math.ceil(window.s_count / window.pagesize) + " 页";
+
+            }
+
+        }
+
+        var admin = window.localStorage.getItem("admin");
+        if (type == 'my') {
+            window.localStorage.setItem("s_type", 'my');
+            var v = document.getElementById("searchkey").value;
+            if (v) {
+                xmlhttp.send("admin=" + admin + "&page=" + window.s_page + "&my=my&pagesize=" + window.pagesize + "&search=" + v);
+                document.getElementById("searchkey").value = '';
+            } else {
+                xmlhttp.send("admin=" + admin + "&page=" + window.s_page + "&my=my&pagesize=" + window.pagesize);
+            }
+
+        } else {
+            window.localStorage.setItem("s_type", 'public');
+            xmlhttp.send("admin=" + admin + "&page=" + window.s_page + "&pagesize=" + window.pagesize);
+        }
+
+
+
+
+    }
+</script>
